@@ -9,13 +9,21 @@ from dataset import DatasetForEval, DatasetForTrainWithLoader, loadImage
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
 import numpy as np
+import argparse
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--iterations', default=200000, type=int, help='number of iterations to run')
+    parser.add_argument('--visdom_port', default=5274 ,type=int, help='Port Visdom server is listening on')
+    return parser.parse_args()
 
-vis = visdom.Visdom(port=5274)
+args = parse_args()
+
+vis = visdom.Visdom(port=args.visdom_port)
 train_loss = None
 val_acc = None
 lbnet = LBNet_1()
-device = th.device("cuda:1")
+device = th.device("cuda:0")
 
 for mod in list(lbnet.children())[0].children():
     if isinstance(mod, nn.Conv2d):
@@ -116,5 +124,5 @@ for iteration, data in enumerate(trainset):
             'optimizer': optimizer.state_dict()
         }
         th.save(state, '../snapshot/snapshot_{}.pth'.format(iteration+1))
-    if iteration > 2000000:
+    if iteration > args.iterations:
         break

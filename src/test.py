@@ -4,18 +4,24 @@ import time
 from dataset import DatasetForTest, loadImage
 import numpy as np
 import sys
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('snapshot', help='Path to the snapshot to load and test')
+parser.add_argument('--test_data_path', default='../data/gei/', help='Path to test data to run test on')
+args = parser.parse_args()
+print(args)
 
 val_acc = None
 lbnet = LBNet_1()
 device = th.device("cuda:0")
-checkpoint = th.load('../snapshot/snapshot_80000.pth')
+checkpoint = th.load(args.snapshot)
 lbnet = lbnet.to(device)
 lbnet.load_state_dict(checkpoint['model'])
 lbnet.eval()
 
 bs = 128
-testset = DatasetForTest('../data/GEI_CASIA_B/gei/')
+testset = DatasetForTest(args.test_data_path)
 print('test probe count = {}'.format(len(testset.all_possible_paths_p)))
 print('Start Testing...')
 localtime = time.asctime(time.localtime(time.time()))
