@@ -15,11 +15,13 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--iterations', default=200000, type=int, help='number of iterations to run')
     parser.add_argument('--visdom_port', default=5274 ,type=int, help='Port Visdom server is listening on')
+    parser.add_argument('--visdom_server', default='localhost', help='hostname of Visdom server (default=localhost)')
+    parser.add_argument('--data_root', default='../data/GEI_CASIA_B/gei/', help='Root directory of the CASIA-B dataset')
     return parser.parse_args()
 
 args = parse_args()
 
-vis = visdom.Visdom(port=args.visdom_port)
+vis = visdom.Visdom(server=args.visdom_server, port=args.visdom_port)
 train_loss = None
 val_acc = None
 lbnet = LBNet_1()
@@ -35,9 +37,8 @@ lbnet.train()
 
 iteration = 0
 bs = 128
-trainset = DatasetForTrainWithLoader(
-    '../data/GEI_CASIA_B/gei/')
-evalset = DatasetForEval('../data/GEI_CASIA_B/gei/')
+trainset = DatasetForTrainWithLoader(args.data_root)
+evalset = DatasetForEval(args.data_root)
 print('evaluation probe count = {}'.format(len(evalset.all_possible_paths_p)))
 print('evaluation size = {}'.format(evalset.__len__()))
 trainset = DataLoader(trainset, bs, num_workers=8)
