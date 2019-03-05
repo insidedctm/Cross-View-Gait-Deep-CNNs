@@ -179,9 +179,13 @@ class DatasetForTest(Dataset):
         img1 = loadImage(self.data_dir + pair[0])
         img2 = loadImage(self.data_dir + pair[1])
         label = 1 if pair[0][0:3] == pair[1][0:3] else 0
-        PROBE_ANGLE = pair[0][-7:-4]
+        PROBE_COND    = self.probe_cond.index(pair[0][4:9])
+        PROBE_ANGLE   = self.angles.index(pair[0][-7:-4])
+        GALLERY_COND  = self.gallery_cond.index(pair[1][4:9])
+        GALLERY_ANGLE = self.angles.index(pair[1][-7:-4])
+        
         return img1, img2, label, [int(pair[0][0:3]), int(pair[1][0:3])], \
-            PROBE_ANGLE
+            PROBE_COND, PROBE_ANGLE, GALLERY_COND, GALLERY_ANGLE
 
 
 class DatasetForTrainWithLoader():
